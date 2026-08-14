@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Upload, Image as ImageIcon, Trash2, CheckCircle2, AlertCircle, Link as LinkIcon, Loader2, Sparkles } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { resolveImageUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../../lib/imageHelper';
 
 interface ImageUploaderProps {
   label: string;
@@ -150,9 +151,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           <div className="relative group w-full flex flex-col items-center">
             <div className={`${getAspectClass()} rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-md relative flex items-center justify-center`}>
               <img
-                src={value}
+                src={resolveImageUrl(value)}
                 alt="Preview"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = DEFAULT_FALLBACK_THUMBNAIL;
+                }}
               />
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
                 <span className="px-3 py-1.5 rounded-lg bg-cyan-500 text-[#05070A] text-xs font-bold shadow">
