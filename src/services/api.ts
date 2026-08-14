@@ -12,6 +12,7 @@ import type {
 } from '../types/index';
 import { doc, setDoc, getDoc, getDocs, collection, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { resolveImageUrl } from '../lib/imageHelper';
 
 const API_BASE = '/api';
 
@@ -22,7 +23,7 @@ export const SEED_PROFILE: UserProfile = {
   bio: 'Selamat datang di personal portfolio dan dokumentasi perjalanan digital saya.',
   about: 'Halo, saya Rizki Pauzi. Saat ini sedang menempuh pendidikan di Universitas Pendidikan Indonesia (UPI). Website ini dirancang untuk mendokumentasikan perjalanan akademis, keahlian, project, dan karya saya.',
   educationStatusSummary: 'Mahasiswa Aktif @ Universitas Pendidikan Indonesia (UPI)',
-  avatarUrl: '/uploads/29772_jpg-1786707214978-191287.jpg',
+  avatarUrl: resolveImageUrl('/uploads/29772_jpg-1786707214978-191287.jpg'),
   location: 'Bandung, Indonesia',
   email: 'rizkipauzi28@upi.edu',
   whatsapp: '+6289525052023',
@@ -159,7 +160,7 @@ export const SEED_PROJECTS: ProjectItem[] = [
     title: 'Aplkasi Penjualan Makanan Berbasis App/web',
     description: 'Jual beli makanan melalui website atau aplikasi',
     longDescription: '',
-    thumbnailUrl: '/uploads/29733_jpg-1786707469313-483808.jpg',
+    thumbnailUrl: resolveImageUrl('/uploads/29733_jpg-1786707469313-483808.jpg'),
     category: 'Web Application',
     technologies: ['React', 'TypeScript', 'Tailwind CSS'],
     demoUrl: '',
@@ -175,7 +176,7 @@ export const SEED_PROJECTS: ProjectItem[] = [
     title: 'Aplikasi Rumah Jajanan Lashira',
     description: 'Jual beli makanan berbasis web( Wordpress) ',
     longDescription: '',
-    thumbnailUrl: '/uploads/29773_jpg-1786707521357-695265.jpg',
+    thumbnailUrl: resolveImageUrl('/uploads/29773_jpg-1786707521357-695265.jpg'),
     category: 'Web Application',
     technologies: ['React', 'TypeScript', 'Tailwind CSS'],
     demoUrl: '',
@@ -193,7 +194,7 @@ export const SEED_GALLERY: GalleryItem[] = [
     id: 'gal-1786707589313-81eb3',
     title: 'PKL Dinas Pemuda Dan Olahraga',
     caption: 'Rekap Laporan',
-    imageUrl: '/uploads/29770_jpg-1786707568273-567708.jpg',
+    imageUrl: resolveImageUrl('/uploads/29770_jpg-1786707568273-567708.jpg'),
     category: 'Dokumentasi',
     isPublished: true,
     order: 1,
@@ -204,7 +205,7 @@ export const SEED_GALLERY: GalleryItem[] = [
     id: 'gal-1786707618517-0b895',
     title: 'Magang Dinas Pemuda dan Olahraga',
     caption: 'Pembuatan web absensi',
-    imageUrl: '/uploads/29771_jpg-1786707595512-556015.jpg',
+    imageUrl: resolveImageUrl('/uploads/29771_jpg-1786707595512-556015.jpg'),
     category: 'Dokumentasi',
     isPublished: true,
     order: 2,
@@ -215,7 +216,7 @@ export const SEED_GALLERY: GalleryItem[] = [
     id: 'gal-1786707661665-69395',
     title: 'Driver Shopee Food',
     caption: '',
-    imageUrl: '/uploads/29772_jpg-1786707214978-191287.jpg',
+    imageUrl: resolveImageUrl('/uploads/29772_jpg-1786707214978-191287.jpg'),
     category: 'Dokumentasi',
     isPublished: true,
     order: 3,
@@ -226,7 +227,7 @@ export const SEED_GALLERY: GalleryItem[] = [
     id: 'gal-1786707757668-uo8ra',
     title: 'Olahraga Boxing',
     caption: '',
-    imageUrl: '/uploads/3646_jpg-1786707747026-34602.jpg',
+    imageUrl: resolveImageUrl('/uploads/3646_jpg-1786707747026-34602.jpg'),
     category: 'Kegiatan',
     isPublished: true,
     order: 4,
@@ -242,7 +243,7 @@ export const SEED_CERTIFICATES: CertificateItem[] = [
     institution: 'Dinas Pendidikan',
     year: '2023',
     credentialId: 'UHC-50018',
-    imageUrl: '/uploads/29738_jpg-1786707806246-975521.jpg',
+    imageUrl: resolveImageUrl('/uploads/29738_jpg-1786707806246-975521.jpg'),
     verificationUrl: '',
     order: 1,
     createdAt: '2026-08-14T11:43:39.190Z',
@@ -254,7 +255,7 @@ export const SEED_CERTIFICATES: CertificateItem[] = [
     institution: 'Disnaker',
     year: '2022',
     credentialId: '526-202',
-    imageUrl: '/uploads/29737_jpg-1786707836864-311607.jpg',
+    imageUrl: resolveImageUrl('/uploads/29737_jpg-1786707836864-311607.jpg'),
     verificationUrl: '',
     order: 2,
     createdAt: '2026-08-14T11:44:31.852Z',
@@ -483,6 +484,9 @@ export const api = {
 
     // 3. Local Cache / Seed
     const localData = getLocalItem<UserProfile>('profile', SEED_PROFILE);
+    if (localData) {
+      localData.avatarUrl = resolveImageUrl(localData.avatarUrl);
+    }
     return { success: true, data: localData };
   },
 
@@ -710,7 +714,11 @@ export const api = {
     }
 
     const localData = getLocalItem<ProjectItem[]>('projects', SEED_PROJECTS);
-    return { success: true, data: localData };
+    const sanitized = (localData || []).map(p => ({
+      ...p,
+      thumbnailUrl: resolveImageUrl(p.thumbnailUrl)
+    }));
+    return { success: true, data: sanitized };
   },
 
   getAllProjectsAdmin: async () => {
@@ -809,7 +817,11 @@ export const api = {
     }
 
     const localData = getLocalItem<GalleryItem[]>('gallery', SEED_GALLERY);
-    return { success: true, data: localData };
+    const sanitized = (localData || []).map(g => ({
+      ...g,
+      imageUrl: resolveImageUrl(g.imageUrl)
+    }));
+    return { success: true, data: sanitized };
   },
 
   getAllGalleryAdmin: async () => {
@@ -889,7 +901,11 @@ export const api = {
     }
 
     const localData = getLocalItem<CertificateItem[]>('certificates', SEED_CERTIFICATES);
-    return { success: true, data: localData };
+    const sanitized = (localData || []).map(c => ({
+      ...c,
+      imageUrl: resolveImageUrl(c.imageUrl)
+    }));
+    return { success: true, data: sanitized };
   },
 
   addCertificate: async (item: Partial<CertificateItem>) => {

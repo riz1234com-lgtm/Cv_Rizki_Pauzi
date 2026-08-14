@@ -5,6 +5,7 @@ import { useToast } from '../../context/ToastContext';
 import { DeleteConfirmModal } from '../common/DeleteConfirmModal';
 import { ImageUploader } from '../common/ImageUploader';
 import type { ProjectItem } from '../../types/index';
+import { resolveImageUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../../lib/imageHelper';
 
 interface AdminProjectsProps {
   projectsList: ProjectItem[];
@@ -54,7 +55,7 @@ export const AdminProjects: React.FC<AdminProjectsProps> = ({ projectsList, onLi
       title: item.title,
       description: item.description,
       category: item.category || 'Web Application',
-      thumbnailUrl: item.thumbnailUrl || '',
+      thumbnailUrl: resolveImageUrl(item.thumbnailUrl) || item.thumbnailUrl || '',
       demoUrl: item.demoUrl || '',
       githubUrl: item.githubUrl || '',
       technologiesString: item.technologies ? item.technologies.join(', ') : '',
@@ -167,7 +168,14 @@ export const AdminProjects: React.FC<AdminProjectsProps> = ({ projectsList, onLi
               <div>
                 <div className="aspect-video bg-slate-950 relative overflow-hidden flex items-center justify-center">
                   {project.thumbnailUrl ? (
-                    <img src={project.thumbnailUrl} alt={project.title} className="w-full h-full object-cover" />
+                    <img
+                      src={resolveImageUrl(project.thumbnailUrl)}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = DEFAULT_FALLBACK_THUMBNAIL;
+                      }}
+                    />
                   ) : (
                     <FolderGit2 className="w-8 h-8 text-slate-700" />
                   )}

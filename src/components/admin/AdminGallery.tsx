@@ -5,6 +5,7 @@ import { useToast } from '../../context/ToastContext';
 import { DeleteConfirmModal } from '../common/DeleteConfirmModal';
 import { ImageUploader } from '../common/ImageUploader';
 import type { GalleryItem } from '../../types/index';
+import { resolveImageUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../../lib/imageHelper';
 
 interface AdminGalleryProps {
   galleryList: GalleryItem[];
@@ -42,7 +43,7 @@ export const AdminGallery: React.FC<AdminGalleryProps> = ({ galleryList, onListU
     setEditingItem(item);
     setFormData({
       title: item.title,
-      imageUrl: item.imageUrl,
+      imageUrl: resolveImageUrl(item.imageUrl) || item.imageUrl,
       caption: item.caption || '',
       category: item.category || 'Dokumentasi'
     });
@@ -134,7 +135,14 @@ export const AdminGallery: React.FC<AdminGalleryProps> = ({ galleryList, onListU
             >
               <div>
                 <div className="aspect-square bg-slate-950 relative overflow-hidden">
-                  <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                  <img
+                    src={resolveImageUrl(item.imageUrl)}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = DEFAULT_FALLBACK_THUMBNAIL;
+                    }}
+                  />
                   <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-950/80 text-cyan-300 border border-slate-700">
                     {item.category}
                   </span>

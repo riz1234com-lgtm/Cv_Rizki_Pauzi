@@ -4,6 +4,7 @@ import { SectionHeader } from '../common/SectionHeader';
 import { LightboxModal } from '../common/LightboxModal';
 import { Image as ImageIcon, ZoomIn, Sparkles } from 'lucide-react';
 import type { GalleryItem } from '../../types/index';
+import { resolveImageUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../../lib/imageHelper';
 
 interface GallerySectionProps {
   galleryList: GalleryItem[];
@@ -84,10 +85,13 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryList }) =
                 >
                   <div className="aspect-square overflow-hidden bg-[#05070A]">
                     <img
-                      src={item.imageUrl}
+                      src={resolveImageUrl(item.imageUrl)}
                       alt={item.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = DEFAULT_FALLBACK_THUMBNAIL;
+                      }}
                     />
                   </div>
 

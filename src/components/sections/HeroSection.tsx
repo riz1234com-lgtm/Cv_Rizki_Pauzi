@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowDown, Sparkles, FolderGit2, User, GraduationCap, ChevronDown, Download } from 'lucide-react';
 import type { UserProfile, SiteSettings } from '../../types/index';
+import { resolveImageUrl } from '../../lib/imageHelper';
 
 interface HeroSectionProps {
   profile: UserProfile;
@@ -12,6 +13,8 @@ interface HeroSectionProps {
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ profile, settings, onNavigate, onNavigateToAdmin, onOpenExportModal }) => {
+  const [imageError, setImageError] = useState(false);
+  const avatarSrc = resolveImageUrl(profile.avatarUrl);
   const handleScrollTo = (sectionId: string) => {
     if (onNavigate) {
       onNavigate(sectionId);
@@ -123,11 +126,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ profile, settings, onN
 
               {/* Card container */}
               <div className="relative w-72 sm:w-80 md:w-96 aspect-square rounded-3xl p-3 bg-[#0F172A] border border-white/10 shadow-2xl overflow-hidden group-hover:border-cyan-500/30 transition-colors duration-500">
-                {profile.avatarUrl ? (
+                {avatarSrc && !imageError ? (
                   <img
-                    src={profile.avatarUrl}
+                    src={avatarSrc}
                     alt={profile.name || 'Rizki Pauzi'}
                     className="w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-105"
+                    onError={() => setImageError(true)}
                   />
                 ) : (
                   /* Elegant Modern Placeholder with Initials & Tech Rings */
@@ -144,7 +148,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ profile, settings, onN
                     </div>
 
                     <div className="mt-6 text-center relative z-10">
-                      <span className="text-sm font-bold text-white tracking-wide">Rizki Pauzi</span>
+                      <span className="text-sm font-bold text-white tracking-wide">{profile.name || 'Rizki Pauzi'}</span>
                       <p className="text-xs text-slate-400 mt-1">Universitas Pendidikan Indonesia</p>
                     </div>
 

@@ -5,6 +5,7 @@ import { useToast } from '../../context/ToastContext';
 import { DeleteConfirmModal } from '../common/DeleteConfirmModal';
 import { ImageUploader } from '../common/ImageUploader';
 import type { CertificateItem } from '../../types/index';
+import { resolveImageUrl } from '../../lib/imageHelper';
 
 interface AdminCertificatesProps {
   certificatesList: CertificateItem[];
@@ -49,7 +50,7 @@ export const AdminCertificates: React.FC<AdminCertificatesProps> = ({ certificat
       institution: item.institution || '',
       year: item.year || '',
       credentialId: item.credentialId || '',
-      imageUrl: item.imageUrl || '',
+      imageUrl: resolveImageUrl(item.imageUrl) || item.imageUrl || '',
       verificationUrl: item.verificationUrl || ''
     });
     setIsModalOpen(true);

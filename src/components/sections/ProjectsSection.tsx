@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { SectionHeader } from '../common/SectionHeader';
 import { ExternalLink, Github, FolderGit2, Star, Sparkles, Layers } from 'lucide-react';
 import type { ProjectItem } from '../../types/index';
+import { resolveImageUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../../lib/imageHelper';
 
 interface ProjectsSectionProps {
   projectsList: ProjectItem[];
@@ -89,10 +90,13 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projectsList }
                   <div className="aspect-video relative overflow-hidden bg-[#05070A]">
                     {project.thumbnailUrl ? (
                       <img
-                        src={project.thumbnailUrl}
+                        src={resolveImageUrl(project.thumbnailUrl)}
                         alt={project.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = DEFAULT_FALLBACK_THUMBNAIL;
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#0F172A] via-[#0A0E17] to-[#05070A]">

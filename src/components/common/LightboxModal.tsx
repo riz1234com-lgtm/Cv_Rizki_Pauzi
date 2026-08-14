@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ExternalLink, Download } from 'lucide-react';
+import { resolveImageUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../../lib/imageHelper';
 
 interface LightboxModalProps {
   isOpen: boolean;
@@ -76,10 +77,13 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
           {/* Image container */}
           <div className="flex-1 overflow-auto bg-slate-950 flex items-center justify-center p-4 min-h-[300px]">
             <img
-              src={imageUrl}
+              src={resolveImageUrl(imageUrl)}
               alt={title}
               className="max-h-[60vh] max-w-full object-contain rounded-lg"
               loading="lazy"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = DEFAULT_FALLBACK_THUMBNAIL;
+              }}
             />
           </div>
 
