@@ -41,7 +41,7 @@ export function createExpressApp() {
   }
 
   // Health check
-  app.get('/api/health', (req, res) => {
+  app.get(['/api/health', '/health'], (req, res) => {
     res.json({
       status: 'ok',
       service: 'Rizki Pauzi Portfolio & CMS API',
@@ -50,22 +50,22 @@ export function createExpressApp() {
     });
   });
 
-  // Authentication API endpoints
-  app.post('/api/auth/login', loginHandler);
-  app.get('/api/auth/me', authMiddleware, getMeHandler);
-  app.post('/api/auth/change-password', authMiddleware, changePasswordHandler);
-  app.put('/api/auth/account', authMiddleware, updateAccountHandler);
+  // Authentication API endpoints (support both /api/auth and /auth for Vercel rewrites)
+  app.post(['/api/auth/login', '/auth/login'], loginHandler);
+  app.get(['/api/auth/me', '/auth/me'], authMiddleware, getMeHandler);
+  app.post(['/api/auth/change-password', '/auth/change-password'], authMiddleware, changePasswordHandler);
+  app.put(['/api/auth/account', '/auth/account'], authMiddleware, updateAccountHandler);
 
-  // Content API Routers
-  app.use('/api/profile', profileRouter);
-  app.use('/api/education', educationRouter);
-  app.use('/api/skills', skillsRouter);
-  app.use('/api/projects', projectsRouter);
-  app.use('/api/gallery', galleryRouter);
-  app.use('/api/certificates', certificatesRouter);
-  app.use('/api/messages', messagesRouter);
-  app.use('/api/settings', settingsRouter);
-  app.use('/api/upload', uploadRouter);
+  // Content API Routers (support both /api/x and /x)
+  app.use(['/api/profile', '/profile'], profileRouter);
+  app.use(['/api/education', '/education'], educationRouter);
+  app.use(['/api/skills', '/skills'], skillsRouter);
+  app.use(['/api/projects', '/projects'], projectsRouter);
+  app.use(['/api/gallery', '/gallery'], galleryRouter);
+  app.use(['/api/certificates', '/certificates'], certificatesRouter);
+  app.use(['/api/messages', '/messages'], messagesRouter);
+  app.use(['/api/settings', '/settings'], settingsRouter);
+  app.use(['/api/upload', '/upload'], uploadRouter);
 
   return app;
 }

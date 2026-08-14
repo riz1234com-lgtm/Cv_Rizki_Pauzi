@@ -32,12 +32,31 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     ? { ...(authHeaders['Authorization'] ? { Authorization: authHeaders['Authorization'] } : {}) }
     : { ...authHeaders, ...(options.headers as Record<string, string> || {}) };
 
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers
+    });
+  } catch (netErr: any) {
+    throw new Error(`Gagal terhubung ke server: ${netErr.message || 'Koneksi terputus'}`);
+  }
 
-  const data = await res.json();
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    if (!res.ok) {
+      throw new Error(`Server Vercel mengembalikan status ${res.status}. Pastikan Serverless Function terdeploy dengan benar.`);
+    }
+    throw new Error('Respons dari server bukan format JSON valid.');
+  }
+
+  let data: any;
+  try {
+    data = await res.json();
+  } catch (parseErr) {
+    throw new Error('Gagal membaca data JSON dari server.');
+  }
+
   if (!res.ok || data.success === false) {
     throw new Error(data.error || 'Terjadi kesalahan pada permintaan');
   }
