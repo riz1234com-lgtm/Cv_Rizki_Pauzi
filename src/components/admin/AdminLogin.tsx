@@ -2,20 +2,33 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { 
-  Lock, Mail, ArrowRight, Eye, EyeOff, Shield, AlertCircle, ArrowLeft
+  Lock, Mail, ArrowRight, Eye, EyeOff, Shield, AlertCircle, ArrowLeft, Globe, ExternalLink
 } from 'lucide-react';
 
 interface AdminLoginProps {
   onBackToHome?: () => void;
+  onBackToWebsite?: () => void;
+  onLoginSuccess?: () => void;
 }
 
-export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToHome }) => {
+export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToHome, onBackToWebsite, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const { login } = useAuth();
+
+  const handleNavigateBack = () => {
+    if (onBackToWebsite) {
+      onBackToWebsite();
+    } else if (onBackToHome) {
+      onBackToHome();
+    } else {
+      window.location.hash = '';
+      window.location.reload();
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +42,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToHome }) => {
 
     try {
       await login(email, password);
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
     } catch (err: any) {
       setErrorMessage(err.message || 'Terjadi kesalahan pada server saat autentikasi.');
     } finally {
@@ -126,18 +142,29 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBackToHome }) => {
           </button>
         </form>
 
-        {onBackToHome && (
-          <div className="mt-8 pt-6 border-t border-white/5 text-center">
+        {/* Action button to view public portfolio directly */}
+        <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
+          <button
+            type="button"
+            onClick={handleNavigateBack}
+            className="w-full py-3 px-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-500/40 text-slate-200 hover:text-cyan-400 font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm group active:scale-[0.99]"
+          >
+            <Globe className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+            <span>Lihat Portofolio (Publik)</span>
+            <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
+          </button>
+
+          <div className="text-center pt-1">
             <button
               type="button"
-              onClick={onBackToHome}
-              className="text-xs text-slate-400 hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              onClick={handleNavigateBack}
+              className="text-[11px] text-slate-400 hover:text-slate-200 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Kembali ke Halaman Portofolio</span>
+              <ArrowLeft className="w-3 h-3" />
+              <span>Kembali ke Beranda</span>
             </button>
           </div>
-        )}
+        </div>
       </motion.div>
     </div>
   );
