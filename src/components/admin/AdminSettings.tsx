@@ -1,0 +1,282 @@
+import React, { useState } from 'react';
+import { Settings, Save, Lock, Mail, Globe, Shield, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { api } from '../../services/api';
+import { useToast } from '../../context/ToastContext';
+import type { SiteSettings } from '../../types/index';
+
+interface AdminSettingsProps {
+  settings: SiteSettings;
+  onSettingsUpdated: (updated: SiteSettings) => void;
+}
+
+export const AdminSettings: React.FC<AdminSettingsProps> = ({ settings, onSettingsUpdated }) => {
+  const { success, error } = useToast();
+
+  const [siteForm, setSiteForm] = useState<SiteSettings>(settings);
+  const [isSavingSite, setIsSavingSite] = useState(false);
+
+  // Security Credentials form
+  const [securityForm, setSecurityForm] = useState({
+    email: 'admin@rizkipauzi.com',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [isUpdatingSecurity, setIsUpdatingSecurity] = useState(false);
+
+  const handleSiteChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSiteForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSaveSiteSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingSite(true);
+    try {
+      const res = await api.updateSettings(siteForm);
+      onSettingsUpdated(res.data);
+      success('Pengaturan website berhasil diperbarui!');
+    } catch (err: any) {
+      error(err.message || 'Gagal menyimpan pengaturan');
+    } finally {
+      setIsSavingSite(false);
+    }
+  };
+
+  const handleUpdateSecurity = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!securityForm.currentPassword) {
+      error('Password saat ini wajib diisi');
+      return;
+    }
+
+    if (securityForm.newPassword) {
+      if (securityForm.newPassword.length < 6) {
+        error('Password baru minimal 6 karakter');
+        return;
+      }
+      if (securityForm.newPassword !== securityForm.confirmPassword) {
+        error('Konfirmasi password tidak cocok');
+        return;
+      }
+    }
+
+    setIsUpdatingSecurity(true);
+    try {
+      if (securityForm.newPassword) {
+        await api.changePassword({
+          currentPassword: securityForm.currentPassword,
+          newPassword: securityForm.newPassword
+        });
+      }
+      if (securityForm.email) {
+        await api.updateAccount({
+          email: securityForm.email,
+          name: 'Administrator'
+        });
+      }
+      success('Kredensial akun admin berhasil diperbarui!');
+      setSecurityForm((prev) => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+    } catch (err: any) {
+      error(err.message || 'Gagal memperbarui kredensial');
+    } finally {
+      setIsUpdatingSecurity(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8 max-w-4xl">
+      <div className="pb-6 border-b border-slate-800">
+        <h2 className="text-2xl font-bold font-display text-white">Pengaturan Website & Akun</h2>
+        <p className="text-xs text-slate-400 mt-1">
+          Kustomisasi teks umum website, headline, meta description, dan kredensial keamanan login administrator.
+        </p>
+      </div>
+
+      {/* Website Text Settings Form */}
+      <form onSubmit={handleSaveSiteSettings} className="p-6 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-5">
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+          <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400">
+            <Globe className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-white">Konfigurasi Teks Website</h3>
+            <p className="text-xs text-slate-400">Kustomisasi judul, deskripsi meta, dan teks footer</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Judul Website (Browser Tab)</label>
+            <input
+              type="text"
+              name="siteTitle"
+              value={siteForm.siteTitle}
+              onChange={handleSiteChange}
+              placeholder="Rizki Pauzi - Professional Portfolio"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-cyan-500 text-sm text-white outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Sapaan Hero</label>
+            <input
+              type="text"
+              name="heroGreeting"
+              value={siteForm.heroGreeting}
+              onChange={handleSiteChange}
+              placeholder="Halo, Selamat Datang"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-cyan-500 text-sm text-white outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Deskripsi Hero</label>
+          <textarea
+            rows={2}
+            name="heroDescription"
+            value={siteForm.heroDescription}
+            onChange={handleSiteChange}
+            placeholder="Deskripsi singkat yang tampil di bagian atas halaman utama..."
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-cyan-500 text-sm text-white outline-none resize-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Meta Description (SEO)</label>
+          <textarea
+            rows={2}
+            name="metaDescription"
+            value={siteForm.metaDescription}
+            onChange={handleSiteChange}
+            placeholder="Deskripsi untuk optimasi mesin pencari Google..."
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-cyan-500 text-sm text-white outline-none resize-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Teks Copyright Footer</label>
+          <input
+            type="text"
+            name="footerText"
+            value={siteForm.footerText}
+            onChange={handleSiteChange}
+            placeholder="© 2026 Rizki Pauzi. All Rights Reserved."
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-cyan-500 text-sm text-white outline-none"
+          />
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <button
+            type="submit"
+            disabled={isSavingSite}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-500 transition-all shadow-md shadow-cyan-600/20 disabled:opacity-50 cursor-pointer"
+          >
+            <Save className="w-4 h-4" />
+            <span>{isSavingSite ? 'Menyimpan...' : 'Simpan Konfigurasi Web'}</span>
+          </button>
+        </div>
+      </form>
+
+      {/* Security Credentials Form */}
+      <form onSubmit={handleUpdateSecurity} className="p-6 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-5">
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+          <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400">
+            <Shield className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-white">Keamanan Akun Administrator</h3>
+            <p className="text-xs text-slate-400">Ubah email login dan password admin</p>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1.5">Email Administrator</label>
+          <input
+            type="email"
+            value={securityForm.email}
+            onChange={(e) => setSecurityForm({ ...securityForm, email: e.target.value })}
+            placeholder="admin@rizkipauzi.com"
+            required
+            className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-indigo-500 text-sm text-white outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            Password Saat Ini <span className="text-rose-400">*</span>
+          </label>
+          <div className="relative">
+            <input
+              type={showCurrentPass ? 'text' : 'password'}
+              value={securityForm.currentPassword}
+              onChange={(e) => setSecurityForm({ ...securityForm, currentPassword: e.target.value })}
+              placeholder="Masukkan password admin saat ini"
+              required
+              className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-indigo-500 text-sm text-white outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCurrentPass(!showCurrentPass)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+            >
+              {showCurrentPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Password Baru (Opsional)</label>
+            <div className="relative">
+              <input
+                type={showNewPass ? 'text' : 'password'}
+                value={securityForm.newPassword}
+                onChange={(e) => setSecurityForm({ ...securityForm, newPassword: e.target.value })}
+                placeholder="Kosongkan jika tidak ingin mengubah"
+                className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-indigo-500 text-sm text-white outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPass(!showNewPass)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+              >
+                {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Ulangi Password Baru</label>
+            <input
+              type="password"
+              value={securityForm.confirmPassword}
+              onChange={(e) => setSecurityForm({ ...securityForm, confirmPassword: e.target.value })}
+              placeholder="Ulangi password baru"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 focus:border-indigo-500 text-sm text-white outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <button
+            type="submit"
+            disabled={isUpdatingSecurity}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50 cursor-pointer"
+          >
+            <Lock className="w-4 h-4" />
+            <span>{isUpdatingSecurity ? 'Memperbarui...' : 'Perbarui Kredensial Admin'}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
