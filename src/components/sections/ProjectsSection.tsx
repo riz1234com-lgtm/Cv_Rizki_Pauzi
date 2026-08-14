@@ -20,8 +20,9 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projectsList }
   }, [projectsList]);
 
   const filteredProjects = useMemo(() => {
-    if (activeCategory === 'All') return projectsList;
-    return projectsList.filter((p) => p.category === activeCategory);
+    const visible = projectsList.filter((p) => p.isPublished !== false);
+    if (activeCategory === 'All') return visible;
+    return visible.filter((p) => p.category === activeCategory);
   }, [projectsList, activeCategory]);
 
   return (

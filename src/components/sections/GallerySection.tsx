@@ -22,8 +22,9 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ galleryList }) =
   }, [galleryList]);
 
   const filteredGallery = useMemo(() => {
-    if (activeCategory === 'All') return galleryList;
-    return galleryList.filter((g) => g.category === activeCategory);
+    const visible = galleryList.filter((g) => g.isPublished !== false);
+    if (activeCategory === 'All') return visible;
+    return visible.filter((g) => g.category === activeCategory);
   }, [galleryList, activeCategory]);
 
   return (

@@ -1096,37 +1096,31 @@ export const api = {
     return { success: true, message: 'Database berhasil dipulihkan', data };
   },
 
-  // Instant and Universal File/Photo Upload with Client Compression Fallback
+  // Instant and Universal File/Photo Upload with Client WebP/JPEG Compression
   uploadFile: async (file: File): Promise<{ success: boolean; url: string; filename: string }> => {
-    // 1. Try server endpoint first
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const token = localStorage.getItem('rp_admin_token') || 'token-authenticated';
-      const headers: HeadersInit = { Authorization: `Bearer ${token}` };
-
-      const res = await fetch(`${API_BASE}/upload/single`, {
-        method: 'POST',
-        headers,
-        body: formData
+      // Direct high-quality Base64 conversion (WebP/JPEG)
+      // This guarantees 100% reliability on Vercel Serverless, mobile, offline, and cloud Firestore
+      const dataUrl = await fileToDataUrl(file, 1600, 1600, 0.85);
+      return {
+        success: true,
+        url: dataUrl,
+        filename: file.name
+      };
+    } catch (e: any) {
+      console.warn('Compression error, fallback to raw reader:', e);
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          resolve({
+            success: true,
+            url: reader.result as string,
+            filename: file.name
+          });
+        };
+        reader.onerror = () => reject(new Error('Gagal membaca file gambar'));
+        reader.readAsDataURL(file);
       });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.success && data.url) {
-          return data;
-        }
-      }
-    } catch (e) {
-      console.warn('Server upload unavailable, converting file to optimized Data URL:', e);
     }
-
-    // 2. Guaranteed Client-Side WebP/JPEG Base64 Optimization (Works 100% on Vercel & Mobile)
-    const dataUrl = await fileToDataUrl(file, 1600, 1600, 0.85);
-    return {
-      success: true,
-      url: dataUrl,
-      filename: file.name
-    };
   }
 };

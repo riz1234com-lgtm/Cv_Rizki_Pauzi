@@ -34,7 +34,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      error('Harap pilih berkas gambar yang valid');
+      error('Harap pilih berkas gambar yang valid (JPG, PNG, WEBP, SVG, dll)');
       return;
     }
 
@@ -46,36 +46,17 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     setIsUploading(true);
 
     try {
-      // Direct server upload
-      try {
-        const res = await api.uploadFile(file);
-        if (res && res.url) {
-          onChange(res.url);
-          success('Foto berhasil diunggah!');
-          setIsUploading(false);
-          return;
-        }
-      } catch (uploadErr) {
-        console.warn('Direct upload endpoint failed, falling back to Base64 data conversion:', uploadErr);
+      const res = await api.uploadFile(file);
+      if (res && res.url) {
+        onChange(res.url);
+        success('Foto berhasil diproses & disimpan!');
+      } else {
+        throw new Error('Gagal menghasilkan data foto');
       }
-
-      // Fallback: Read as High-Quality Base64 Data URL (ensures image saving works even if server storage is offline or on static hosting)
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64Url = event.target?.result as string;
-        if (base64Url) {
-          onChange(base64Url);
-          success('Foto berhasil diproses dan disimpan!');
-        }
-        setIsUploading(false);
-      };
-      reader.onerror = () => {
-        error('Gagal membaca file foto');
-        setIsUploading(false);
-      };
-      reader.readAsDataURL(file);
     } catch (err: any) {
+      console.error('Upload process error:', err);
       error(err.message || 'Gagal memproses foto');
+    } finally {
       setIsUploading(false);
     }
   };
