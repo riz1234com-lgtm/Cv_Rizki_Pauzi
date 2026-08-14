@@ -45,52 +45,52 @@ const INITIAL_EDUCATION: EducationItem[] = [
     institution: 'SDN Sukahati 2',
     level: 'Sekolah Dasar',
     status: 'Completed',
-    startYear: 'Belum diatur',
-    endYear: 'Belum diatur',
+    startYear: '2008',
+    endYear: '2015',
     description: 'Pendidikan tingkat dasar (SD) diselesaikan di SDN Sukahati 2.',
     logoUrl: '',
     order: 1,
     createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z'
+    updatedAt: '2026-08-14T11:35:24.105Z'
   },
   {
     id: 'edu-smp-mekar-arum',
     institution: 'SMP Mekar Arum',
     level: 'Sekolah Menengah Pertama',
     status: 'Completed',
-    startYear: 'Belum diatur',
-    endYear: 'Belum diatur',
+    startYear: '2015',
+    endYear: '2018',
     description: 'Pendidikan tingkat menengah pertama (SMP) diselesaikan di SMP Mekar Arum.',
     logoUrl: '',
     order: 2,
     createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z'
+    updatedAt: '2026-08-14T11:35:38.998Z'
   },
   {
     id: 'edu-smk-medikacom',
     institution: 'SMK Medikacom',
     level: 'Sekolah Menengah Kejuruan',
     status: 'Completed',
-    startYear: 'Belum diatur',
-    endYear: 'Belum diatur',
+    startYear: '2018',
+    endYear: '2021',
     description: 'Pendidikan tingkat kejuruan (SMK) diselesaikan di SMK Medikacom.',
     logoUrl: '',
     order: 3,
     createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z'
+    updatedAt: '2026-08-14T11:35:54.636Z'
   },
   {
     id: 'edu-upi-bandung',
     institution: 'Universitas Pendidikan Indonesia (UPI)',
     level: 'Perguruan Tinggi / Sarjana',
     status: 'In Progress',
-    startYear: 'Belum diatur',
+    startYear: '2022',
     endYear: 'Sekarang',
     description: 'Sedang menempuh studi pendidikan tinggi di Universitas Pendidikan Indonesia (UPI).',
     logoUrl: '',
     order: 4,
     createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z'
+    updatedAt: '2026-08-14T11:36:01.660Z'
   }
 ];
 
@@ -100,16 +100,176 @@ const INITIAL_PROFILE: UserProfile = {
   bio: 'Selamat datang di personal portfolio dan dokumentasi perjalanan digital saya.',
   about: 'Halo, saya Rizki Pauzi. Saat ini sedang menempuh pendidikan di Universitas Pendidikan Indonesia (UPI). Website ini dirancang untuk mendokumentasikan perjalanan akademis, keahlian, project, dan karya saya.',
   educationStatusSummary: 'Mahasiswa Aktif @ Universitas Pendidikan Indonesia (UPI)',
-  avatarUrl: '',
+  avatarUrl: '/uploads/29772_jpg-1786707214978-191287.jpg',
   location: 'Bandung, Indonesia',
-  email: '',
-  whatsapp: '',
-  instagram: '',
+  email: 'rizkipauzi28@upi.edu',
+  whatsapp: '+6289525052023',
+  instagram: 'rizkipauzi_',
   linkedin: '',
   github: '',
   website: '',
   availableForWork: true
 };
+
+const INITIAL_SKILLS: SkillItem[] = [
+  {
+    id: 'skill-1786707389107-onayk',
+    name: 'Designer',
+    category: 'Web Development',
+    proficiency: 85,
+    levelLabel: 'Intermediate',
+    icon: 'Code',
+    description: '',
+    order: 1,
+    createdAt: '2026-08-14T11:36:29.107Z',
+    updatedAt: '2026-08-14T11:36:29.107Z'
+  },
+  {
+    id: 'skill-1786707415762-6kxe2',
+    name: 'PHP/HTML',
+    category: 'Web Development',
+    proficiency: 65,
+    levelLabel: 'Intermediate',
+    icon: 'Code',
+    description: '',
+    order: 2,
+    createdAt: '2026-08-14T11:36:55.762Z',
+    updatedAt: '2026-08-14T11:36:55.762Z'
+  },
+  {
+    id: 'skill-1786707429839-q3ct4',
+    name: 'Microsoft Office',
+    category: 'Web Development',
+    proficiency: 90,
+    levelLabel: 'Intermediate',
+    icon: 'Code',
+    description: '',
+    order: 3,
+    createdAt: '2026-08-14T11:37:09.839Z',
+    updatedAt: '2026-08-14T11:37:09.839Z'
+  },
+  {
+    id: 'skill-1786707450092-fina6',
+    name: 'Sport science',
+    category: 'Web Development',
+    proficiency: 90,
+    levelLabel: 'Intermediate',
+    icon: 'Code',
+    description: '',
+    order: 4,
+    createdAt: '2026-08-14T11:37:30.092Z',
+    updatedAt: '2026-08-14T11:37:30.092Z'
+  }
+];
+
+const INITIAL_PROJECTS: ProjectItem[] = [
+  {
+    id: 'proj-1786707508866-pvdm5',
+    title: 'Aplkasi Penjualan Makanan Berbasis App/web',
+    description: 'Jual beli makanan melalui website atau aplikasi',
+    longDescription: '',
+    thumbnailUrl: '/uploads/29733_jpg-1786707469313-483808.jpg',
+    category: 'Web Application',
+    technologies: ['React', 'TypeScript', 'Tailwind CSS'],
+    demoUrl: '',
+    githubUrl: '',
+    featured: false,
+    isPublished: true,
+    order: 1,
+    createdAt: '2026-08-14T11:38:28.866Z',
+    updatedAt: '2026-08-14T11:38:28.866Z'
+  },
+  {
+    id: 'proj-1786707550977-r7rui',
+    title: 'Aplikasi Rumah Jajanan Lashira',
+    description: 'Jual beli makanan berbasis web( Wordpress) ',
+    longDescription: '',
+    thumbnailUrl: '/uploads/29773_jpg-1786707521357-695265.jpg',
+    category: 'Web Application',
+    technologies: ['React', 'TypeScript', 'Tailwind CSS'],
+    demoUrl: '',
+    githubUrl: '',
+    featured: false,
+    isPublished: true,
+    order: 2,
+    createdAt: '2026-08-14T11:39:10.977Z',
+    updatedAt: '2026-08-14T11:39:10.977Z'
+  }
+];
+
+const INITIAL_GALLERY: GalleryItem[] = [
+  {
+    id: 'gal-1786707589313-81eb3',
+    title: 'PKL Dinas Pemuda Dan Olahraga',
+    caption: 'Rekap Laporan',
+    imageUrl: '/uploads/29770_jpg-1786707568273-567708.jpg',
+    category: 'Dokumentasi',
+    isPublished: true,
+    order: 1,
+    createdAt: '2026-08-14T11:39:49.313Z',
+    updatedAt: '2026-08-14T11:39:49.313Z'
+  },
+  {
+    id: 'gal-1786707618517-0b895',
+    title: 'Magang Dinas Pemuda dan Olahraga',
+    caption: 'Pembuatan web absensi',
+    imageUrl: '/uploads/29771_jpg-1786707595512-556015.jpg',
+    category: 'Dokumentasi',
+    isPublished: true,
+    order: 2,
+    createdAt: '2026-08-14T11:40:18.517Z',
+    updatedAt: '2026-08-14T11:40:18.517Z'
+  },
+  {
+    id: 'gal-1786707661665-69395',
+    title: 'Driver Shopee Food',
+    caption: '',
+    imageUrl: '/uploads/29772_jpg-1786707214978-191287.jpg',
+    category: 'Dokumentasi',
+    isPublished: true,
+    order: 3,
+    createdAt: '2026-08-14T11:41:01.665Z',
+    updatedAt: '2026-08-14T11:41:01.665Z'
+  },
+  {
+    id: 'gal-1786707757668-uo8ra',
+    title: 'Olahraga Boxing',
+    caption: '',
+    imageUrl: '/uploads/3646_jpg-1786707747026-34602.jpg',
+    category: 'Kegiatan',
+    isPublished: true,
+    order: 4,
+    createdAt: '2026-08-14T11:42:37.668Z',
+    updatedAt: '2026-08-14T11:42:37.668Z'
+  }
+];
+
+const INITIAL_CERTIFICATES: CertificateItem[] = [
+  {
+    id: 'cert-1786707819190-q4can',
+    title: 'Sertifikat LPK ',
+    institution: 'Dinas Pendidikan',
+    year: '2023',
+    credentialId: 'UHC-50018',
+    imageUrl: '/uploads/29738_jpg-1786707806246-975521.jpg',
+    verificationUrl: '',
+    order: 1,
+    createdAt: '2026-08-14T11:43:39.190Z',
+    updatedAt: '2026-08-14T11:43:39.190Z'
+  },
+  {
+    id: 'cert-1786707871852-dwky8',
+    title: 'Sertifikat Disnaker',
+    institution: 'Disnaker',
+    year: '2022',
+    credentialId: '526-202',
+    imageUrl: '/uploads/29737_jpg-1786707836864-311607.jpg',
+    verificationUrl: '',
+    order: 2,
+    createdAt: '2026-08-14T11:44:31.852Z',
+    updatedAt: '2026-08-14T11:44:31.852Z'
+  }
+];
 
 const INITIAL_SETTINGS: SiteSettings = {
   siteTitle: 'Rizki Pauzi — Personal Portfolio & Digital Journey',
@@ -140,10 +300,10 @@ function getInitialData(): DatabaseSchema {
     },
     profile: INITIAL_PROFILE,
     education: INITIAL_EDUCATION,
-    skills: [],
-    projects: [],
-    gallery: [],
-    certificates: [],
+    skills: INITIAL_SKILLS,
+    projects: INITIAL_PROJECTS,
+    gallery: INITIAL_GALLERY,
+    certificates: INITIAL_CERTIFICATES,
     messages: [],
     settings: INITIAL_SETTINGS
   };
@@ -545,6 +705,23 @@ class DatabaseManager {
       totalMessages: this.data.messages.length,
       unreadMessages: this.data.messages.filter((m) => !m.isRead).length
     };
+  }
+
+  // Full Database Backup & Restore
+  getFullDatabase(): DatabaseSchema {
+    return { ...this.data };
+  }
+
+  importFullDatabase(importedData: Partial<DatabaseSchema>): DatabaseSchema {
+    if (importedData.profile) this.data.profile = { ...this.data.profile, ...importedData.profile };
+    if (Array.isArray(importedData.education)) this.data.education = importedData.education;
+    if (Array.isArray(importedData.skills)) this.data.skills = importedData.skills;
+    if (Array.isArray(importedData.projects)) this.data.projects = importedData.projects;
+    if (Array.isArray(importedData.gallery)) this.data.gallery = importedData.gallery;
+    if (Array.isArray(importedData.certificates)) this.data.certificates = importedData.certificates;
+    if (importedData.settings) this.data.settings = { ...this.data.settings, ...importedData.settings };
+    this.saveData();
+    return this.data;
   }
 }
 

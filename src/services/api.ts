@@ -278,6 +278,17 @@ export const api = {
     return request<{ success: boolean; data: StatsOverview }>('/settings/stats');
   },
 
+  backupDatabase: async () => {
+    return request<{ success: boolean; exportedAt: string; data: any }>('/settings/backup');
+  },
+
+  restoreDatabase: async (data: any) => {
+    return request<{ success: boolean; message: string; data: any }>('/settings/restore', {
+      method: 'POST',
+      body: JSON.stringify({ data })
+    });
+  },
+
   // File Upload
   uploadFile: async (file: File): Promise<{ success: boolean; url: string; filename: string }> => {
     const formData = new FormData();

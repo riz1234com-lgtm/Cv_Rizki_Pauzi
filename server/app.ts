@@ -26,6 +26,8 @@ export function createExpressApp() {
   // Ensure uploads directory exists and serve statically
   const isVercel = process.env.VERCEL === '1' || !!process.env.VERCEL;
   const uploadsDir = isVercel ? path.join('/tmp', 'uploads') : path.join(process.cwd(), 'uploads');
+  const rootUploadsDir = path.join(process.cwd(), 'uploads');
+
   if (!fs.existsSync(uploadsDir)) {
     try {
       fs.mkdirSync(uploadsDir, { recursive: true });
@@ -34,6 +36,9 @@ export function createExpressApp() {
     }
   }
   app.use('/uploads', express.static(uploadsDir));
+  if (isVercel && fs.existsSync(rootUploadsDir)) {
+    app.use('/uploads', express.static(rootUploadsDir));
+  }
 
   // Health check
   app.get('/api/health', (req, res) => {

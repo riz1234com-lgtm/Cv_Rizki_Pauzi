@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Settings, Save, Lock, Mail, Globe, Shield, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Settings, Save, Lock, Mail, Globe, Shield, CheckCircle2, Eye, EyeOff, Database, Download, Upload, RefreshCw } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import type { SiteSettings } from '../../types/index';
@@ -11,9 +11,12 @@ interface AdminSettingsProps {
 
 export const AdminSettings: React.FC<AdminSettingsProps> = ({ settings, onSettingsUpdated }) => {
   const { success, error } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [siteForm, setSiteForm] = useState<SiteSettings>(settings);
   const [isSavingSite, setIsSavingSite] = useState(false);
+  const [isExportingDb, setIsExportingDb] = useState(false);
+  const [isImportingDb, setIsImportingDb] = useState(false);
 
   // Security Credentials form
   const [securityForm, setSecurityForm] = useState({
@@ -88,6 +91,49 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ settings, onSettin
       error(err.message || 'Gagal memperbarui kredensial');
     } finally {
       setIsUpdatingSecurity(false);
+    }
+  };
+
+  const handleExportDatabase = async () => {
+    setIsExportingDb(true);
+    try {
+      const res = await api.backupDatabase();
+      const jsonStr = JSON.stringify(res.data, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `database-backup-rizki-pauzi-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      success('Database berhasil diekspor dan diunduh ke komputer!');
+    } catch (err: any) {
+      error(err.message || 'Gagal mengekspor backup database');
+    } finally {
+      setIsExportingDb(false);
+    }
+  };
+
+  const handleImportFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsImportingDb(true);
+    try {
+      const text = await file.text();
+      const parsedData = JSON.parse(text);
+      await api.restoreDatabase(parsedData);
+      success('Database berhasil dipulihkan dari file backup!');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+    } catch (err: any) {
+      error(err.message || 'Format file JSON backup tidak valid');
+    } finally {
+      setIsImportingDb(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -277,6 +323,86 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ settings, onSettin
           </button>
         </div>
       </form>
+
+      {/* Database Backup & Restore Manager */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
+              <Database className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white">Manajemen Database & Backup Data</h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Unduh seluruh data website (biodata, pendidikan, skills, project, galeri, sertifikat) atau pulihkan dari file cadangan.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex flex-col justify-between">
+            <div>
+              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                <Download className="w-4 h-4 text-cyan-400" />
+                Ekspor Database (Backup JSON)
+              </h4>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                Unduh seluruh data yang sudah Anda isi ke format file <code className="text-cyan-300">.json</code> agar data Anda selalu aman dan dapat dipindahkan kapan saja.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleExportDatabase}
+              disabled={isExportingDb}
+              className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 transition-all shadow-md cursor-pointer disabled:opacity-50"
+            >
+              <Download className="w-4 h-4" />
+              <span>{isExportingDb ? 'Mengekspor Data...' : 'Unduh Backup Database'}</span>
+            </button>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex flex-col justify-between">
+            <div>
+              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                <Upload className="w-4 h-4 text-emerald-400" />
+                Impor & Pulihkan Database
+              </h4>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                Pulihkan atau sinkronkan data website menggunakan file backup <code className="text-emerald-300">.json</code> yang pernah Anda unduh sebelumnya.
+              </p>
+            </div>
+            <div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json,application/json"
+                onChange={handleImportFileChange}
+                className="hidden"
+                id="database-file-upload"
+              />
+              <label
+                htmlFor="database-file-upload"
+                className={`mt-4 inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer ${
+                  isImportingDb ? 'opacity-50 pointer-events-none' : ''
+                }`}
+              >
+                {isImportingDb ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
+                    <span>Memulihkan Data...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 text-emerald-400" />
+                    <span>Pilih File Backup JSON</span>
+                  </>
+                )}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
