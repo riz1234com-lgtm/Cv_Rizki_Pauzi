@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { Settings, Save, Lock, Mail, Globe, Shield, CheckCircle2, Eye, EyeOff, Database, Download, Upload, RefreshCw } from 'lucide-react';
+import { Settings, Save, Lock, Mail, Globe, Shield, CheckCircle2, Eye, EyeOff, Database, Download, Upload, RefreshCw, Flame, CloudCheck, ExternalLink } from 'lucide-react';
 import { api } from '../../services/api';
+import { syncAllToFirestore, fetchAllFromFirestore } from '../../lib/firebaseSync';
 import { useToast } from '../../context/ToastContext';
 import type { SiteSettings } from '../../types/index';
 
@@ -17,6 +18,8 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ settings, onSettin
   const [isSavingSite, setIsSavingSite] = useState(false);
   const [isExportingDb, setIsExportingDb] = useState(false);
   const [isImportingDb, setIsImportingDb] = useState(false);
+  const [isSyncingFirebase, setIsSyncingFirebase] = useState(false);
+  const [isPullingFirebase, setIsPullingFirebase] = useState(false);
 
   // Security Credentials form
   const [securityForm, setSecurityForm] = useState({
@@ -134,6 +137,39 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ settings, onSettin
     } finally {
       setIsImportingDb(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSyncToFirestore = async () => {
+    setIsSyncingFirebase(true);
+    try {
+      const res = await api.backupDatabase();
+      if (res.data) {
+        await syncAllToFirestore(res.data);
+        success('Seluruh data website berhasil disinkronkan ke Google Cloud Firestore (Firebase)!');
+      }
+    } catch (err: any) {
+      error(err.message || 'Gagal menyinkronkan data ke Firebase');
+    } finally {
+      setIsSyncingFirebase(false);
+    }
+  };
+
+  const handlePullFromFirestore = async () => {
+    setIsPullingFirebase(true);
+    try {
+      const firestoreData = await fetchAllFromFirestore();
+      if (firestoreData) {
+        await api.restoreDatabase(firestoreData);
+        success('Data berhasil ditarik dari Cloud Firestore dan diperbarui!');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1200);
+      }
+    } catch (err: any) {
+      error(err.message || 'Gagal memuat data dari Cloud Firestore');
+    } finally {
+      setIsPullingFirebase(false);
     }
   };
 
@@ -400,6 +436,93 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({ settings, onSettin
                 )}
               </label>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Firebase Cloud Firestore Manager */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400">
+              <Flame className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white">Google Cloud Firebase & Firestore</h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Proyek Firebase: <span className="text-amber-400 font-mono font-semibold">cv-rizki-pauzi</span> (Region: <span className="text-slate-300 font-mono">asia-southeast1</span>)
+              </p>
+            </div>
+          </div>
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <CloudCheck className="w-3.5 h-3.5" />
+            <span>Terhubung & Aktif</span>
+          </span>
+        </div>
+
+        <p className="text-xs text-slate-300 leading-relaxed">
+          Database Cloud Firestore telah terhubung secara resmi ke proyek Firebase Anda. Anda dapat menyinkronkan seluruh data website (biodata, riwayat pendidikan UPI, skill, karya, sertifikat, dan pengaturan) langsung ke cloud.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex flex-col justify-between">
+            <div>
+              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                <Flame className="w-4 h-4 text-amber-400" />
+                Sinkronkan ke Cloud Firestore
+              </h4>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                Kirim dan perbarui seluruh data lokal/server ke koleksi Cloud Firestore (<code className="text-amber-300">profile, education, skills, projects, gallery, certificates</code>).
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleSyncToFirestore}
+              disabled={isSyncingFirebase}
+              className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 transition-all shadow-md cursor-pointer disabled:opacity-50"
+            >
+              {isSyncingFirebase ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
+                  <span>Menyinkronkan ke Cloud...</span>
+                </>
+              ) : (
+                <>
+                  <CloudCheck className="w-4 h-4" />
+                  <span>Sync Semua Data ke Firebase</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex flex-col justify-between">
+            <div>
+              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                <RefreshCw className="w-4 h-4 text-cyan-400" />
+                Tarik Data dari Cloud Firestore
+              </h4>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                Unduh dan terapkan data terbaru yang tersimpan di Google Cloud Firestore ke sistem website.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handlePullFromFirestore}
+              disabled={isPullingFirebase}
+              className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all shadow-md cursor-pointer disabled:opacity-50"
+            >
+              {isPullingFirebase ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin text-cyan-400" />
+                  <span>Mengambil Data Cloud...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 text-cyan-400" />
+                  <span>Tarik Data dari Firebase</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

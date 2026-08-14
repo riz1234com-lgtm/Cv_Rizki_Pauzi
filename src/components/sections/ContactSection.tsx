@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { SectionHeader } from '../common/SectionHeader';
 import { Mail, Send, CheckCircle2, MessageSquare, Phone, Instagram, Linkedin, Github, Globe, Sparkles } from 'lucide-react';
 import { api } from '../../services/api';
+import { sendContactMessageToFirestore } from '../../lib/firebaseSync';
 import { useToast } from '../../context/ToastContext';
 import type { UserProfile } from '../../types/index';
 
@@ -42,6 +43,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile }) => {
     setIsSubmitting(true);
     try {
       await api.sendMessage(formData);
+      // Also back up to Cloud Firestore asynchronously
+      sendContactMessageToFirestore(formData).catch((e) => {
+        console.warn('Firestore message backup warning:', e);
+      });
       setIsSuccess(true);
       success('Pesan Anda berhasil dikirim! Terima kasih.');
       setFormData({ name: '', email: '', subject: '', message: '' });

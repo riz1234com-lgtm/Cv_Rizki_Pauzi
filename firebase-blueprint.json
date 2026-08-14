@@ -1,0 +1,189 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile and personal biographical details of Rizki Pauzi",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "headline": { "type": "string", "maxLength": 200 },
+        "bio": { "type": "string", "maxLength": 500 },
+        "about": { "type": "string", "maxLength": 3000 },
+        "educationStatusSummary": { "type": "string", "maxLength": 200 },
+        "avatarUrl": { "type": "string", "maxLength": 1000 },
+        "location": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "whatsapp": { "type": "string", "maxLength": 50 },
+        "instagram": { "type": "string", "maxLength": 100 },
+        "linkedin": { "type": "string", "maxLength": 200 },
+        "github": { "type": "string", "maxLength": 200 },
+        "website": { "type": "string", "maxLength": 200 },
+        "availableForWork": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "headline", "bio", "about", "email"]
+    },
+    "EducationItem": {
+      "title": "EducationItem",
+      "description": "Educational history and institution credentials",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "institution": { "type": "string", "maxLength": 150 },
+        "level": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["Completed", "In Progress"] },
+        "startYear": { "type": "string", "maxLength": 50 },
+        "endYear": { "type": "string", "maxLength": 50 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "logoUrl": { "type": "string", "maxLength": 1000 },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "institution", "level", "status", "startYear", "endYear", "order"]
+    },
+    "SkillItem": {
+      "title": "SkillItem",
+      "description": "Technical skill, proficiency percentage, and category",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "maxLength": 100 },
+        "proficiency": { "type": "number" },
+        "levelLabel": { "type": "string", "maxLength": 50 },
+        "icon": { "type": "string", "maxLength": 50 },
+        "description": { "type": "string", "maxLength": 500 },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "category", "proficiency", "levelLabel", "order"]
+    },
+    "ProjectItem": {
+      "title": "ProjectItem",
+      "description": "Portfolio work, project application, and showcase item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "longDescription": { "type": "string", "maxLength": 5000 },
+        "thumbnailUrl": { "type": "string", "maxLength": 1000 },
+        "category": { "type": "string", "maxLength": 100 },
+        "technologies": { "type": "array" },
+        "demoUrl": { "type": "string", "maxLength": 500 },
+        "githubUrl": { "type": "string", "maxLength": 500 },
+        "featured": { "type": "boolean" },
+        "isPublished": { "type": "boolean" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "description", "thumbnailUrl", "order", "isPublished"]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "Photo documentation or activity image",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "title": { "type": "string", "maxLength": 200 },
+        "caption": { "type": "string", "maxLength": 500 },
+        "imageUrl": { "type": "string", "maxLength": 1000 },
+        "category": { "type": "string", "maxLength": 100 },
+        "isPublished": { "type": "boolean" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "imageUrl", "isPublished", "order"]
+    },
+    "CertificateItem": {
+      "title": "CertificateItem",
+      "description": "Certification, license or achievement record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "title": { "type": "string", "maxLength": 200 },
+        "institution": { "type": "string", "maxLength": 150 },
+        "year": { "type": "string", "maxLength": 50 },
+        "credentialId": { "type": "string", "maxLength": 100 },
+        "imageUrl": { "type": "string", "maxLength": 1000 },
+        "verificationUrl": { "type": "string", "maxLength": 500 },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "institution", "year", "order"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Visitor contact inquiries and messages",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "subject": { "type": "string", "maxLength": 200 },
+        "message": { "type": "string", "maxLength": 3000 },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "message", "isRead", "createdAt"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global website configuration and presentation settings",
+      "type": "object",
+      "properties": {
+        "siteTitle": { "type": "string", "maxLength": 200 },
+        "metaDescription": { "type": "string", "maxLength": 500 },
+        "heroGreeting": { "type": "string", "maxLength": 100 },
+        "heroName": { "type": "string", "maxLength": 100 },
+        "heroHeadline": { "type": "string", "maxLength": 200 },
+        "heroDescription": { "type": "string", "maxLength": 1000 },
+        "primaryAccent": { "type": "string", "maxLength": 50 },
+        "accentGlow": { "type": "boolean" },
+        "footerText": { "type": "string", "maxLength": 300 },
+        "showAdminButton": { "type": "boolean" },
+        "enableSoundEffects": { "type": "boolean" }
+      },
+      "required": ["siteTitle", "heroGreeting", "heroName"]
+    }
+  },
+  "firestore": {
+    "/profile/{docId}": {
+      "schema": "UserProfile",
+      "description": "Main user profile singleton record"
+    },
+    "/education/{itemId}": {
+      "schema": "EducationItem",
+      "description": "Educational background entries"
+    },
+    "/skills/{itemId}": {
+      "schema": "SkillItem",
+      "description": "Technical and non-technical skills"
+    },
+    "/projects/{itemId}": {
+      "schema": "ProjectItem",
+      "description": "Portfolio work showcase"
+    },
+    "/gallery/{itemId}": {
+      "schema": "GalleryItem",
+      "description": "Activity photos and documentation"
+    },
+    "/certificates/{itemId}": {
+      "schema": "CertificateItem",
+      "description": "Certificates and licenses"
+    },
+    "/messages/{messageId}": {
+      "schema": "ContactMessage",
+      "description": "Visitor contact form messages"
+    },
+    "/settings/{docId}": {
+      "schema": "SiteSettings",
+      "description": "Website global configuration settings"
+    }
+  }
+}
