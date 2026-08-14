@@ -1,7 +1,9 @@
 {
-  "name": "react-example",
+  "name": "portfolio-rizki-pauzi",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Personal Portfolio & Content Management System (CMS) — Rizki Pauzi (Universitas Pendidikan Indonesia)",
+  "author": "Rizki Pauzi <rizkipauzi28@upi.edu>",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
